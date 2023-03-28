@@ -32,13 +32,13 @@
           </v-row>
           <v-row wrap class="text-primary">
             <v-col xs="12" sm="6" offset-sm="3">
-              <v-text-field
-              name="imageUrl"
-              label="Image Url"
-              id="image-url"
-              v-model="imageUrl"
-              required>
-              </v-text-field>
+              <v-file-input 
+                type="file"
+                accept="image/*"
+                label="File input"
+                prepend-icon="mdi-camera"
+                @change="onFilePicked"  
+              ></v-file-input>
             </v-col>
           </v-row>
           <v-row dense>
@@ -82,7 +82,7 @@
             <v-col xs="12" sm="6" offset-sm="3">
               <v-btn color="primary" 
               :disabled="!formIsValid"
-              type="submit"
+              type="submit"  
               >Create Meetup</v-btn>
             </v-col>
           </v-row>
@@ -107,6 +107,7 @@ export default {
       description: '',
       date: null,
       time: null,
+      image: null
     }
   },
   computed: {
@@ -119,14 +120,18 @@ export default {
     
   },
   methods: {
-    onCreateMeetup() {
+    onCreateMeetup(event) {
       if (!this.formIsValid) {
         return 
       }
+      if (!this.image) {
+        return
+      }
+      
       const meetupData = {
         title: this.title,
         location: this.location,
-        imageUrl: this.imageUrl,
+        image: this.image,
         description: this.description,
         date: this.date,
         time: this.time
@@ -134,9 +139,25 @@ export default {
       
       this.$store.dispatch('createMeetup', meetupData)
       this.$router.push('/meetups')
+      
+    },
+    onFilePicked(event) {
+      const files = event.target.files
+      let filename = files[0].name
+      if (filename.lastIndexOf('.') <= 0) {
+        return alert('Please add a valid file!')
+      }
+      const fileReader = new FileReader()
+      fileReader.addEventListener('load', () => {
+        this.imageUrl = fileReader.result
+      })
+      fileReader.readAsDataURL(files[0])
+      this.image = files[0]
+      
     }
   }
 }
+
 </script>
 
 <style>

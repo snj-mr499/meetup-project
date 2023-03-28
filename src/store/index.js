@@ -1,9 +1,11 @@
 
 import { createStore } from 'vuex'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
-import { getDatabase, ref, push, child, set, onValue, get } from 'firebase/database'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { getDatabase, ref, push, child, set, onValue, get, update } from 'firebase/database'
 import { database } from '../main'
 import { FirebaseError } from 'firebase/app';
+import { getDownloadURL, getStorage, uploadBytesResumable, ref as sRef } from 'firebase/storage'
+
 
 export const store = createStore({
     state: {
@@ -64,7 +66,8 @@ export const store = createStore({
                             description: obj[key].description,
                             imageUrl: obj[key].imageUrl,
                             date: obj[key].date,
-                            time: obj[key].time
+                            time: obj[key].time,
+                            creatorId: obj[key].creatorId
                         })
                     }
                     
@@ -74,6 +77,8 @@ export const store = createStore({
                 })
                 .catch((error) => {
                     console.log(error)
+                    commit('setLoading', true)
+
                 })
             
         },
@@ -82,30 +87,70 @@ export const store = createStore({
             const meetup = {
                 title: payload.title,
                 location: payload.location,
-                imageUrl: payload.imageUrl,
+                //imageUrl: null,
                 description: payload.description,
                 date: payload.date,
-                time: payload.time
+                time: payload.time,
+                creatorId: getters.user.id
             }
             // const newPostKey =push(child(ref(db), 'meetups')).key
             // const updates = {}
             // updates['/meetups/' + newPostKey] = meetup
 
-
-            push(child(ref(db), 'meetups'))
-                .then((data) => {
-                    const key = data.key
-                    commit('createMeetup', {
-                        ...meetup,
-                        id: key
+            let imageUrl
+            let key
+            const newPostKey = push(child(ref(db), 'meetups')).key
+            // const updates = {} 
+            // updates['/meetups/' + newPostKey] = meetup
+            // update(ref(db), updates)
+            
+            const storage = getStorage()
+            const metadata = {
+                contentType: 'image/jpeg'
+            }
+            
+            const filename = payload.image.name
+            const file = payload.image
+            const ext = filename.slice(filename.lastIndexOf('.'))
+           
+            const storageRef = sRef(storage, 'meetups/' + newPostKey + '.' + ext)
+            const uploadImage = uploadBytesResumable(storageRef, file, metadata)
+            
+            uploadImage.on("state_changed",
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    console.log('Upload is ' + progress + '% done')
+                },
+                (error) => {
+                    alert(error)
+                },
+                () => {
+                    getDownloadURL(uploadImage.snapshot.ref).then((downloadURL) => {
+                        (this.imageUrl = downloadURL)
+                        console.log(this.imageUrl)
+                        
                     })
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+                }
+            )
+                
+            meetup.imageUrl= this.imageUrl
             
+            const updates = {} 
+            updates['/meetups/' + newPostKey] = meetup
+            
+            //updates['/users/' + getters.user.id + '/' + newPostKey] = meetup
+            
+            update(ref(db), updates)
+            // update(ref(db, '/meetups/'), {
+            //     imageUrl: imageUrl
+            // })
             // store in firebase 
-            
+            commit('createMeetup', {
+                ...meetup,
+                imageUrl: this.imageUrl
+            })
+
+            commit('setLoading', false)
         },
         signUserup({ commit }, payload) {
             commit('setLoading', true)
@@ -152,6 +197,14 @@ export const store = createStore({
                         console.log(error)
                  }
             )
+        },
+        autoSignIn({commit},payload) {
+            commit('setUser', {id: payload.uid, registerMeetups: []})
+        },
+        logout({commit}) {
+            const auth = getAuth();
+            signOut(auth);
+            commit('setUser', null)
         },
         clearError({ commit }) {
             commit('clearError')

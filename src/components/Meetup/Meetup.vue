@@ -6,11 +6,11 @@
           <v-card-title class="text-h6 text-primary" >
             {{ meetup.title }}
           </v-card-title>
-          <v-img 
+            <v-img 
                 :src="meetup.imageUrl"
-                height="400px"
+                height="500"
                 cover
-          ></v-img>
+            ></v-img>
           <v-card-text>
             <div class="text-info">{{ meetup.date }} , {{ meetup.time }} - {{ meetup.location }}</div>
             <div> {{ meetup.description }}</div>

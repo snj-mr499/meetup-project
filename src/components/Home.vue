@@ -10,8 +10,21 @@
           <v-btn large router to="/meetup/new" color="primary">Organize Meetups</v-btn>
         </p>   
     </v-row>
+    <div class="text-center">
+      <v-row>
+        <v-col xs="12">
+          <v-progress-circular
+            indeterminate
+            color="primary"
+            :width="7"
+            :size="70"
+            v-if="loading"
+          ></v-progress-circular>
+        </v-col>
+      </v-row>
+    </div>
     
-    <v-row class="mt-2" >
+    <v-row class="mt-2" v-if="!loading">
       <v-col>  
         <v-carousel style="cursor: pointer">
           <v-carousel-item
@@ -46,8 +59,8 @@ export default {
     const store = useStore()
 
     return {
-      meetups: computed(() => store.getters.featuredMeetups)
-     // loading: computed(() => store.getters.loading)
+      meetups: computed(() => store.getters.featuredMeetups),
+      loading: computed(() => store.getters.loading)
     } 
   },
  

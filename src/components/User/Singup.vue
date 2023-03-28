@@ -45,7 +45,7 @@
               </v-row>
               <v-row>
                 <v-col xs="12">
-                  <v-btn type="submit" :loading="loading" :disabled="password !== confirmPassword" >Sign Up</v-btn>
+                  <v-btn type="submit" :disabled="password !== confirmPassword" >Sign Up</v-btn>
                 </v-col>
               </v-row>
             </v-form>

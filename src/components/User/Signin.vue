@@ -35,7 +35,7 @@
               
               <v-row>
                 <v-col xs="12">
-                  <v-btn type="submit" :loading="loading" :disabled="loading">Sign In</v-btn>
+                  <v-btn type="submit" >Sign In</v-btn>
                 </v-col>
               </v-row>
             </v-form>
