@@ -23,8 +23,12 @@ import { getAnalytics } from "firebase/analytics";
 import { getDatabase } from 'firebase/database'
 
 import AlertCmp from './components/Shared/Alert.vue'
+import EditMeetupDetailsDialog from './components/Meetup/Edit/EditMeetupDetailsDialog.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { getStorage } from 'firebase/storage'
+import EditMeetupDateDialog from './components/Meetup/Edit/EditMeetupDateDialog.vue'
+import EditMeetupTimeDialog from './components/Meetup/Edit/EditMeetupTimeDialog.vue'
+import RegisterDialog from './components/Meetup/Registration/RegisterDialog.vue'
 
 const firebaseConfig = {
     apiKey: 'AIzaSyB1c1gHBb1ca1uo2tvnUofYV152mZsQxOQ',
@@ -49,13 +53,19 @@ const app = createApp(App);
 app.use(store);
 registerPlugins(app);
 
-app.component('VueDatePicker', VueDatePicker)
+
 app.component('app-alert', AlertCmp)
+app.component('app-edit-meetup-details-dialog', EditMeetupDetailsDialog)
+app.component('app-edit-meetup-date-dialog', EditMeetupDateDialog)
+app.component('app-edit-meetup-time-dialog', EditMeetupTimeDialog)
+app.component('app-meetup-register-dialog', RegisterDialog)
+app.component('VueDatePicker', VueDatePicker)
 
 const auth = getAuth();
 onAuthStateChanged(auth, (user) => {
     if (user) {
         store.dispatch('autoSignIn', user)
+        store.dispatch('fetchUserData')
     }
 })
 store.dispatch('loadMeetups')

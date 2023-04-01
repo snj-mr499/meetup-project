@@ -68,13 +68,13 @@
           </v-row>
           <v-row>
             <v-col xs="12" sm="6" offset-sm="3">
-              <VueDatepicker v-model="date" model-type="dd.MM.yyyy"></VueDatepicker>
+              <VueDatePicker v-model="date" model-type="dd.MM.yyyy"></VueDatePicker>
               <p v-if="date">Selected date: {{ date }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col xs="12" sm="6" offset-sm="3">
-              <VueDatepicker v-model="time" time-picker :is-24="false" model-type="hh.mm a"></VueDatepicker>
+              <VueDatePicker v-model="time" time-picker :is-24="false" model-type="hh.mm a"></VueDatePicker>
               <p v-if="time">Selected time: {{ time }}</p>
             </v-col>
           </v-row>
@@ -94,11 +94,11 @@
 
 <script>
 
-import VueDatepicker from '@vuepic/vue-datepicker'
+import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
 export default {
-  components: { VueDatepicker },
+  components: { VueDatePicker },
   data() {
     return {
       title: '',
