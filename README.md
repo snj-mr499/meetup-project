@@ -1,4 +1,4 @@
-# default
+# Meetup Project
 
 ## Project setup
 
@@ -17,7 +17,7 @@ pnpm install
 
 ```
 # yarn
-yarn dev
+yarn run dev
 
 # npm
 npm run dev
