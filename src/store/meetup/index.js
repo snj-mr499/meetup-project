@@ -54,32 +54,20 @@ export default {
             commit('setLoading', true)
             const db = getDatabase()
             get(ref(db, 'meetups'))
-                .then((data) => {
-                    const meetups = []
-                    const obj = data.val()
-                    for (let key in obj) {
-                        meetups.push({
-                            id: key,
-                            title: obj[key].title,
-                            description: obj[key].description,
-                            imageUrl: obj[key].imageUrl,
-                            location: obj[key].location,
-                            date: obj[key].date,
-                            time: obj[key].time,
-                            creatorId: obj[key].creatorId
-                        })
-                    }
-                    
-                    commit('setLoadedMeetups', meetups)
-                    commit('setLoading', false)
-
-                })
-                .catch((error) => {
-                    console.log(error)
-                    commit('setLoading', true)
-                })
-            
-        },
+              .then((data) => {
+                const meetups = Object.keys(data.val()).map(key => ({
+                  id: key,
+                  ...data.val()[key]
+                }))
+                commit('setLoadedMeetups', meetups)
+                commit('setLoading', false)
+                console.log("meetups", meetups)
+              })
+              .catch((error) => {
+                console.log(error)
+                commit('setLoading', false)
+              })
+          },
         async createMeetup({ commit, getters }, payload) {
             try {
                 const db = getDatabase();
@@ -159,12 +147,11 @@ export default {
             }
 
             update(ref(db, '/meetups/' + payload.id), {
-                updateObj
+                ...updateObj
             }).then(() => {
                   commit('setLoading', false)
-                commit('updateMeetup',
-                    payload,
-                    updateObj
+                  commit('updateMeetup',
+                    payload
                 )
             })
                 .catch(error => {

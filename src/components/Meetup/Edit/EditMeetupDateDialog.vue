@@ -66,6 +66,9 @@ import '@vuepic/vue-datepicker/dist/main.css'
                 date: this.date
               })
           },
+          created() {
+            this.date = this.meetup.date
+          }
           
       }
   
